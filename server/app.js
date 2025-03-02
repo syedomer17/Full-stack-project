@@ -1,9 +1,14 @@
 import express from "express"
 import config from "config"
 import "./utils/dbConnect.js"
+import cors from "cors";
 
 import userRouter from "./controllers/Users/index.js"
 import publicRouter from "./controllers/public/index.js"
+
+app.use(cors({
+    origin:["http://localhost:5173"]
+}))
 
 const app = express()
 
