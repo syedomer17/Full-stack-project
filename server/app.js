@@ -1,40 +1,42 @@
-import express from "express"
-import config from "config"
-import "./utils/dbConnect.js"
+import express from "express";
+import config from "config";
+import "./utils/dbConnect.js";
 import cors from "cors";
 
-import userRouter from "./controllers/Users/index.js"
-import publicRouter from "./controllers/public/index.js"
+import userRouter from "./controllers/Users/index.js";
+import publicRouter from "./controllers/public/index.js";
 
-app.use(cors({
-    origin:["http://localhost:5173"]
-}))
+const app = express(); // Move this above all uses of `app`
 
-const app = express()
+app.use(
+  cors({
+    origin: ["http://localhost:5173"],
+  })
+);
 
-const PORT = config.get("PORT") || 5002;
+const PORT = config.get("PORT")|| 5001 // Safer handling
 
-app.use(express.json())// for accepting data from user postman or broser
+app.use(express.json()); // Middleware for JSON request body parsing
 
-app.get("/", (req, res)=>{
-    try {
-
-        res.status(200).json({msg: `server is running⚡`})
-        
-    } catch (error) {
-        console.log(error);
-        res.status(401).json({msg: error})
-    }
+app.get("/", (req, res) => {
+  try {
+    res.status(200).json({ msg: `Server is running ⚡` });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "Internal Server Error" });
+  }
 });
 
-app.use("/api/public",publicRouter);
-app.use("/api/users",userRouter);
+// Routes
+app.use("/api/public", publicRouter);
+app.use("/api/users", userRouter);
 
-app.use((req, res)=>{
-    res.status(200).json({msg: `Invalid Route❌`})
-})
+// Catch-all for invalid routes
+app.use((req, res) => {
+  res.status(404).json({ msg: "Invalid Route ❌" });
+});
 
-app.listen(PORT, ()=>{
-    console.log(`YOUR SERVER IS RUNNING AT ${PORT}`);
-    
-})
+// Start server
+app.listen(PORT, () => {
+  console.log(`🚀 YOUR SERVER IS RUNNING AT http://localhost:${PORT}`);
+});
